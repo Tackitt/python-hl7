@@ -1,0 +1,6 @@
+__version__ = '0.2.6'
+__author__ = 'John Paulett'
+__email__ = 'john -at- paulett.org'
+__license__ = 'BSD'
+__copyright__ = 'Copyright 2011, John Paulett <john -at- paulett.org>'
+__url__ = 'http://python-hl7.readthedocs.org'

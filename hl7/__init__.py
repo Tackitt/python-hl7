@@ -5,17 +5,12 @@
 * Documentation: http://python-hl7.readthedocs.org
 * Source Code: http://github.com/johnpaulett/python-hl7
 """
-from builtins import str
-from past.builtins import basestring
 from builtins import object
-import six
+from builtins import str
 
-__version__ = '0.2.5'
-__author__ = 'John Paulett'
-__email__ = 'john -at- paulett.org'
-__license__ = 'BSD'
-__copyright__ = 'Copyright 2011, John Paulett <john -at- paulett.org>'
-__url__ = 'http://python-hl7.readthedocs.org'
+from past.builtins import basestring
+
+from hl7.__version__ import *
 
 
 def ishl7(line):
