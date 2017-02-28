@@ -29,8 +29,9 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     packages = ['hl7'],
+    install_requires=['six'],
     test_suite = 'tests',
-    tests_require = ['mock'],
+    tests_require = ['mock', 'pytest'],
     entry_points = {
         'console_scripts': [
             'mllp_send = hl7.client:mllp_send',
