@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup
 
-with open('hl7/__version__.py', 'r') as f:
-    exec(f.read(), globals())
+exec(open('hl7/version.py').read())
 
 setup(
     name='hl7',
@@ -29,9 +28,9 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     packages=['hl7'],
-    install_requires=['six'],
-    test_suite='tests',
-    tests_require=['mock', 'pytest'],
+    install_requires=['future', 'six'],
+    setup_requires=['pytest-runner'],
+    tests_require=['mock', 'pytest', 'unittest2'],
     entry_points={
         'console_scripts': [
             'mllp_send = hl7.client:mllp_send',

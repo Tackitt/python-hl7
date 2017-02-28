@@ -10,7 +10,7 @@ from builtins import str
 
 from past.builtins import basestring
 
-from hl7.__version__ import *
+from hl7.version import __version__
 
 
 def ishl7(line):
