@@ -5,6 +5,10 @@
 * Documentation: http://python-hl7.readthedocs.org
 * Source Code: http://github.com/johnpaulett/python-hl7
 """
+from builtins import str
+from past.builtins import basestring
+from builtins import object
+import six
 
 __version__ = '0.2.5'
 __author__ = 'John Paulett'
@@ -12,6 +16,7 @@ __email__ = 'john -at- paulett.org'
 __license__ = 'BSD'
 __copyright__ = 'Copyright 2011, John Paulett <john -at- paulett.org>'
 __url__ = 'http://python-hl7.readthedocs.org'
+
 
 def ishl7(line):
     """Determines whether a *line* looks like an HL7 message.
@@ -22,6 +27,7 @@ def ishl7(line):
     """
     ## Prevent issues if the line is empty
     return line.strip().startswith('MSH') if line else False
+
 
 def parse(line):
     """Returns a instance of the :py:class:`hl7.Message` that allows
@@ -45,13 +51,14 @@ def parse(line):
     ## ensure that we get unicode input. For regular ASCII, the conversion
     ## will occur seamlessly, but for non-ASCII strings, parse must receive
     ## a unicode string or it will error out
-    line = unicode(line)
+    line = str(line)
     ## Strip out unnecessary whitespace
     strmsg = line.strip()
     ## The method for parsing the message
     plan = create_parse_plan(strmsg)
     ## Start spliting the methods based upon the ParsePlan
     return _split(strmsg, plan)
+
 
 def _split(text, plan):
     """Recursive function to split the *text* into an n-deep list,
@@ -63,13 +70,15 @@ def _split(text, plan):
 
     ## Recurse so that the sub plans are used in order to split the data
     ## into the approriate type as defined by the current plan.
-    data = [_split(x, plan.next()) for x in text.split(plan.separator)]
+    data = [_split(x, next(plan)) for x in text.split(plan.separator)]
     ## Return the instance of the current message part according
     ## to the plan
     return plan.container(data)
 
+
 class Container(list):
     """Abstract root class for the parts of the HL7 message."""
+
     def __init__(self, separator, sequence=[]):
         ## Initialize the list object, optionally passing in the
         ## sequence.  Since list([]) == [], using the default
@@ -78,6 +87,9 @@ class Container(list):
         self.separator = separator
 
     def __unicode__(self):
+        return self.__str__()
+
+    def __str__(self):
         """Join a the child containers into a single string, separated
         by the self.separator.  This method acts recursively, calling
         the children's __unicode__ method.  Thus ``unicode()`` is the
@@ -88,7 +100,8 @@ class Container(list):
         True
 
         """
-        return self.separator.join((unicode(x) for x in self))
+        return self.separator.join((str(x) for x in self))
+
 
 class Message(Container):
     """Representation of an HL7 message. It contains a list
@@ -149,6 +162,7 @@ class Message(Container):
             raise KeyError('No %s segments' % segment_id)
         return matches
 
+
 class Segment(Container):
     """Second level of an HL7 message, which represents an HL7 Segment.
     Traditionally this is a line of a message that ends with a carriage
@@ -156,10 +170,12 @@ class Segment(Container):
     :py:class:`hl7.Field` instances.
     """
 
+
 class Field(Container):
     """Third level of an HL7 message, that traditionally is surrounded
     by pipes and separated by carets. It contains a list of strings.
     """
+
 
 def create_parse_plan(strmsg):
     """Creates a plan on how to parse the HL7 message according to
@@ -175,10 +191,12 @@ def create_parse_plan(strmsg):
     containers = [Message, Segment, Field]
     return _ParsePlan(separators, containers)
 
+
 class _ParsePlan(object):
     """Details on how to parse an HL7 message. Typically this object
     should be created via :func:`hl7.create_parse_plan`
     """
+
     # field, component, repetition, escape, subcomponent
     # TODO implement escape, and subcomponent
 
@@ -201,7 +219,7 @@ class _ParsePlan(object):
         """
         return self.containers[0](self.separator, data)
 
-    def next(self):
+    def __next__(self):
         """Generate the next level of the plan (essentially generates
         a copy of this plan with the level of the container and the
         seperator starting at the next index.
@@ -210,7 +228,7 @@ class _ParsePlan(object):
             ## Return a new instance of this class using the tails of
             ## the separators and containers lists. Use self.__class__()
             ## in case :class:`hl7.ParsePlan` is subclassed
-            return  self.__class__(self.separators[1:], self.containers[1:])
+            return self.__class__(self.separators[1:], self.containers[1:])
         ## When we have no separators and containers left, return None,
         ## which indicates that we have nothing further.
         return None

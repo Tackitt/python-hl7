@@ -1,3 +1,5 @@
+from builtins import str
+from builtins import object
 from hl7.client import MLLPClient, MLLPException, mllp_send, CR, SB, EB
 from hl7 import __version__ as hl7_version
 from mock import patch, Mock
